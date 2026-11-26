@@ -81,14 +81,41 @@ function load(){let r=null;try{r=localStorage.getItem(KEY)}catch(x){r=mem}
 function persist(){const s=JSON.stringify(W);mem=s;try{localStorage.setItem(KEY,s);return true}catch(x){alert('保存できませんでした。写真が多すぎる可能性があります。バックアップを取り、不要な写真を減らしてください。');return false}}
 function toast(t){const d=document.createElement('div');d.className='toast';d.textContent=t;document.body.appendChild(d);setTimeout(()=>d.remove(),2600)}
 window.alert=toast;
-function saveM(){try{localStorage.setItem(MK,JSON.stringify(M))}catch(x){}}
-function syncM(){['targets','purpose'].forEach(k=>W.forEach(w=>tags(w[k]).forEach(t=>{if(!M[k].includes(t))M[k].push(t)})));saveM()}
+let FB=null,AU,DB,U=null,unl,unm,first=0;
+const B='https://www.gstatic.com/firebasejs/10.14.1/';
+async function initFB(){let c=null;try{c=JSON.parse(localStorage.getItem('uriFB'))}catch(x){}if(!c)return;
+ try{const [a,au,fs]=await Promise.all([import(B+'firebase-app.js'),import(B+'firebase-auth.js'),import(B+'firebase-firestore.js')]);
+ FB={a,au,fs};const app=a.initializeApp(c);AU=au.getAuth(app);DB=fs.getFirestore(app);
+ au.onAuthStateChanged(AU,u=>{U=u;if(unl)unl();if(unm)unm();if(u)listen();drawSync()});drawSync()}catch(x){alert('同期の読み込みに失敗しました');}}
+function listen(){const {collection,onSnapshot,doc}=FB.fs;first=0;
+ unl=onSnapshot(collection(DB,'users',U.uid,'works'),s=>{let ch=false;
+  s.docChanges().forEach(c=>{const d=c.doc.data(),i=W.findIndex(x=>x.id===d.id);
+   if(c.type==='removed'){if(i>=0){W.splice(i,1);ch=true}}
+   else if(i<0){W.push(d);ch=true}else if((d.u||0)>(W[i].u||0)){W[i]=d;ch=true}});
+  if(!first){first=1;const ids=new Set(s.docs.map(x=>x.id));W.filter(w=>!ids.has(w.id)).forEach(pushW)}
+  if(ch){persist();syncM();drawFilters();drawGrid()}},x=>alert('同期エラー：'+x.code));
+ unm=onSnapshot(doc(DB,'users',U.uid,'meta','master'),s=>{if(!s.exists()){pushM();return}const d=s.data();
+  if((d.u||0)>(M.u||0)){M=d;M.targets=M.targets||[];M.purpose=M.purpose||[];syncM();drawFilters()}})}
+function pushW(w){if(!U)return;if(!w.u)w.u=Date.now();FB.fs.setDoc(FB.fs.doc(DB,'users',U.uid,'works',w.id),w).catch(x=>alert('同期に失敗しました'))}
+function delW(id){if(!U)return;FB.fs.deleteDoc(FB.fs.doc(DB,'users',U.uid,'works',id)).catch(x=>alert('同期に失敗しました'))}
+function pushAllW(){W.forEach(w=>{w.u=Date.now();pushW(w)})}
+function pushM(){if(!U)return;if(!M.u)M.u=Date.now();FB.fs.setDoc(FB.fs.doc(DB,'users',U.uid,'meta','master'),M).catch(x=>{})}
+function drawSync(){const d=$('sy');if(!d)return;let c=null;try{c=localStorage.getItem('uriFB')}catch(x){}
+ if(!c){d.innerHTML='<p class="note">Firebaseの設定（firebaseConfig）を貼り付けてください。</p><textarea class="f" id="cfg" rows="4" placeholder="const firebaseConfig = { ... }"></textarea><div class="acts"><button class="btn" onclick="saveCfg()">設定を保存</button></div>';return}
+ if(!FB){d.innerHTML='<p class="note">読み込み中…</p>';return}
+ if(!U){d.innerHTML='<input class="f" id="em" type="email" placeholder="メールアドレス"><input class="f" id="pw" type="password" placeholder="パスワード（6文字以上）" style="margin-top:8px"><div class="acts"><button class="btn" onclick="login(0)">ログイン</button><button class="btn o" onclick="login(1)">新規登録</button><button class="btn o" onclick="resetCfg()">設定をやり直す</button></div>';return}
+ d.innerHTML='<p>✓ 同期中：'+e(U.email)+'</p><div class="acts"><button class="btn o" onclick="FB.au.signOut(AU)">ログアウト</button></div>'}
+function saveCfg(){try{let t=$('cfg').value;t=t.slice(t.indexOf('{'),t.lastIndexOf('}')+1).replace(/([{,]\s*)([A-Za-z_]\w*)\s*:/g,'$1"$2":').replace(/,\s*}/g,'}');const c=JSON.parse(t);if(!c.apiKey||!c.projectId)throw 0;localStorage.setItem('uriFB',JSON.stringify(c));drawSync();initFB()}catch(x){alert('設定の形式が正しくありません')}}
+function resetCfg(){try{localStorage.removeItem('uriFB')}catch(x){}location.reload()}
+function login(n){const a=FB.au;(n?a.createUserWithEmailAndPassword:a.signInWithEmailAndPassword)(AU,$('em').value.trim(),$('pw').value).catch(x=>alert('失敗しました（'+(x.code||'')+'）'))}
+function saveM(b){if(b!==false){M.u=Date.now();pushM()}try{localStorage.setItem(MK,JSON.stringify(M))}catch(x){}}
+function syncM(){['targets','purpose'].forEach(k=>W.forEach(w=>tags(w[k]).forEach(t=>{if(!M[k].includes(t))M[k].push(t)})));saveM(false)}
 function loadM(){let r=null;try{r=JSON.parse(localStorage.getItem(MK))}catch(x){}
  M=r&&r.targets&&r.purpose?r:JSON.parse(JSON.stringify(MD));syncM()}
 function chipsHtml(k,sel){return M[k].map(v=>`<span class="chip ${sel.includes(v)?'on':''}" data-v="${e(v)}" onclick="this.classList.toggle('on')">${e(v)}</span>`).join('')||'<span class="note">項目がありません。下で追加してください</span>'}
 function picked(k){return [...document.querySelectorAll('#g_'+k+' .chip.on')].map(x=>x.dataset.v)}
 function qadd(k){const v=$('n_'+k).value.trim();if(!v)return;const s=picked(k);if(!M[k].includes(v))M[k].push(v);if(!s.includes(v))s.push(v);saveM();$('g_'+k).innerHTML=chipsHtml(k,s);$('n_'+k).value='';drawFilters()}
-function mrefresh(k,o){const fk=k==='targets'?'mu':'pu';if(o&&S[fk]===o)S[fk]='';persist();saveM();drawFilters();drawGrid()}
+function mrefresh(k,o){const fk=k==='targets'?'mu':'pu';if(o&&S[fk]===o)S[fk]='';persist();saveM();pushAllW();drawFilters();drawGrid()}
 function openMaster(ek,ei){let h='';[['targets','ターゲット部位'],['purpose','ワークの目的']].forEach(([k,l])=>{h+=`<div class="sec"><h4>${l}</h4>`+M[k].map((v,i)=>`<div style="display:flex;gap:6px;align-items:center;margin:6px 0">`+(ek===k&&ei===i?`<input class="f" id="rn" value="${e(v)}" style="flex:1"><button class="btn" onclick="mren('${k}',${i})">保存</button>`:`<span style="flex:1">${e(v)}</span><button class="btn o" onclick="openMaster('${k}',${i})">名前変更</button><button class="btn d" onclick="mdel('${k}',${i},this)">削除</button>`)+`</div>`).join('')+`<div style="display:flex;gap:6px;margin-top:8px"><input class="f" id="m_${k}" placeholder="新しい項目を追加"><button class="btn" onclick="madd('${k}')">追加</button></div></div>`});h+='<p class="note">名前を変えると、登録済みのワークにも反映されます。削除すると、登録済みのワークからも外れます。</p>';sheet('部位・目的の項目を編集',h)}
 function madd(k){const v=$('m_'+k).value.trim();if(!v||M[k].includes(v))return;M[k].push(v);saveM();drawFilters();openMaster()}
 function mren(k,i){const n=$('rn').value.trim(),o=M[k][i];if(!n||n===o){openMaster();return}if(M[k].includes(n)){alert('同じ名前の項目があります');return}M[k][i]=n;W.forEach(w=>{w[k]=tags(w[k]).map(t=>t===o?n:t).join(',')});mrefresh(k,o);openMaster()}
@@ -104,7 +131,7 @@ function drawGrid(){
  const L=W.filter(w=>(!S.eq||w.eq===S.eq)&&(!S.mu||tags(w.targets).includes(S.mu))&&(!S.pu||tags(w.purpose).includes(S.pu))&&(!S.fav||w.fav)&&(!q||Object.entries(w).filter(([k])=>k!=='photo').map(([,v])=>v).join(' ').toLowerCase().includes(q)));
  $('cnt').textContent=L.length+' 件 / 全 '+W.length+' 件';
  $('grid').innerHTML=L.length?L.map(w=>`<div class="card" onclick="openDetail('${w.id}')"><div class="ph">${w.photo?`<img src="${w.photo}" alt="">`:e((w.nameJa||'').charAt(0))}</div><span class="badge">${e(w.eq)}</span><button class="heart" onclick="event.stopPropagation();fav('${w.id}')">${w.fav?'♥':'♡'}</button><div class="cb"><b>${e(w.nameJa)}</b><div class="meta">${e(w.level)}</div></div></div>`).join(''):'<div class="empty" style="grid-column:1/-1">該当するワークがありません</div>'}
-function fav(id){const w=W.find(x=>x.id===id);w.fav=!w.fav;persist();drawGrid()}
+function fav(id){const w=W.find(x=>x.id===id);w.fav=!w.fav;w.u=Date.now();persist();pushW(w);drawGrid()}
 function close_(){$('modal').innerHTML=''}
 function sheet(t,b){$('modal').innerHTML=`<div class="ov" onclick="if(event.target===this)close_()"><div class="sheet"><div class="sh"><b>${t}</b><button class="btn o" onclick="close_()">閉じる</button></div><div class="sb">${b}</div></div></div>`}
 function openDetail(id){const w=W.find(x=>x.id===id);
@@ -112,7 +139,7 @@ function openDetail(id){const w=W.find(x=>x.id===id);
  FD.forEach(([k,l])=>{if(!w[k])return;const v=(k==='purpose'||k==='targets')?tags(w[k]).map(x=>`<span class="tag">${e(x)}</span>`).join(''):`<p>${e(w[k])}</p>`;h+=`<div class="sec"><h4>${l.replace(/（.*）/,'')}</h4>${v}</div>`});
  h+=`<div class="acts"><button class="btn" onclick="openForm('${id}')">編集</button><button class="btn o" onclick="fav('${id}');openDetail('${id}')">${w.fav?'♥ お気に入り解除':'♡ お気に入り'}</button><button class="btn d" onclick="del('${id}',this)">削除</button></div>`;
  sheet('ワーク詳細',h)}
-function del(id,b){if(!b.dataset.c){b.dataset.c=1;b.textContent='もう一度押すと削除';return}W=W.filter(x=>x.id!==id);persist();close_();drawFilters();drawGrid()}
+function del(id,b){if(!b.dataset.c){b.dataset.c=1;b.textContent='もう一度押すと削除';return}W=W.filter(x=>x.id!==id);persist();delW(id);close_();drawFilters();drawGrid()}
 function openForm(id){const w=id?W.find(x=>x.id===id):{};P=w.photo||'';
  const sel=(a,v)=>a.map(x=>`<option ${x===v?'selected':''}>${x}</option>`).join('');
  let h=`<label>写真</label><img id="pv" class="dph" style="display:${P?'block':'none'}" src="${P}" alt=""><input type="file" accept="image/*" onchange="pick(this)"><div class="note">自動で縮小して保存します</div>
@@ -126,12 +153,12 @@ function save(id){const g=k=>$('f_'+k).value.trim();
  if(!g('nameJa')){alert('ワーク名を入力してください');return}
  const w=id?W.find(x=>x.id===id):{id:'w'+Date.now(),fav:false};
  ['nameJa','eq','level',...FD.map(f=>f[0]).filter(k=>k!=='purpose'&&k!=='targets')].forEach(k=>w[k]=g(k));w.purpose=picked('purpose').join(',');w.targets=picked('targets').join(',');w.photo=P;
- if(!id)W.unshift(w);if(persist()){close_();drawFilters();drawGrid()}}
-function openData(){sheet('バックアップと復元',`<div class="sec" style="margin-top:0"><h4>バックアップ</h4><p class="note">下のテキストをコピーして「メモ」アプリ等に保存してください。</p><label style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="inc" onchange="mkBk()"> 写真を含める（サイズが大きくなります）</label><textarea class="f" id="bk" rows="5" readonly></textarea><div class="acts"><button class="btn" onclick="cp()">コピー</button></div></div>
-<div class="sec"><h4>復元</h4><p class="note">バックアップのテキストを貼り付けるか、ファイルを選んでください。同じIDのワークは上書きされます。</p><input type="file" accept=".json,.txt,application/json,text/plain" onchange="rf(this)"><textarea class="f" id="rs" rows="4" placeholder="ここに貼り付け"></textarea><div class="acts"><button class="btn" onclick="restore()">復元する</button></div></div>`);mkBk()}
+ w.u=Date.now();if(!id)W.unshift(w);if(persist()){pushW(w);close_();drawFilters();drawGrid()}}
+function openData(){sheet('同期・バックアップ',`<div class="sec" style="margin-top:0"><h4>端末間の同期</h4><div id="sy"></div></div><div class="sec"><h4>バックアップ</h4><p class="note">下のテキストをコピーして「メモ」アプリ等に保存してください。</p><label style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="inc" onchange="mkBk()"> 写真を含める（サイズが大きくなります）</label><textarea class="f" id="bk" rows="5" readonly></textarea><div class="acts"><button class="btn" onclick="cp()">コピー</button></div></div>
+<div class="sec"><h4>復元</h4><p class="note">バックアップのテキストを貼り付けるか、ファイルを選んでください。同じIDのワークは上書きされます。</p><input type="file" accept=".json,.txt,application/json,text/plain" onchange="rf(this)"><textarea class="f" id="rs" rows="4" placeholder="ここに貼り付け"></textarea><div class="acts"><button class="btn" onclick="restore()">復元する</button></div></div>`);mkBk();drawSync()}
 function mkBk(){const inc=$('inc').checked;$('bk').value=JSON.stringify({app:'uri-pilates',v:2,master:M,works:W.map(w=>inc?w:{...w,photo:''})})}
 function cp(){const t=$('bk');t.select();try{navigator.clipboard.writeText(t.value).then(()=>alert('コピーしました'),()=>{document.execCommand('copy');alert('コピーしました')})}catch(x){try{document.execCommand('copy');alert('コピーしました')}catch(y){alert('テキストを長押しでコピーしてください')}}}
 function rf(i){const f=i.files[0];if(!f)return;const r=new FileReader();r.onload=()=>$('rs').value=r.result;r.readAsText(f)}
-function restore(){try{const d=JSON.parse($('rs').value);if(!d.works)throw 0;d.works.forEach(n=>{const i=W.findIndex(x=>x.id===n.id);if(i>=0){if(!n.photo)n.photo=W[i].photo;W[i]=n}else W.push(n)});if(d.master)['targets','purpose'].forEach(k=>(d.master[k]||[]).forEach(t=>{if(!M[k].includes(t))M[k].push(t)}));syncM();persist();close_();drawFilters();drawGrid();alert(d.works.length+' 件を復元しました')}catch(x){alert('バックアップの形式が正しくありません')}}
-load();loadM();drawFilters();drawGrid();
+function restore(){try{const d=JSON.parse($('rs').value);if(!d.works)throw 0;d.works.forEach(n=>{const i=W.findIndex(x=>x.id===n.id);if(i>=0){if(!n.photo)n.photo=W[i].photo;W[i]=n}else W.push(n)});if(d.master)['targets','purpose'].forEach(k=>(d.master[k]||[]).forEach(t=>{if(!M[k].includes(t))M[k].push(t)}));syncM();saveM();pushAllW();persist();close_();drawFilters();drawGrid();alert(d.works.length+' 件を復元しました')}catch(x){alert('バックアップの形式が正しくありません')}}
+load();loadM();drawFilters();drawGrid();initFB();
 </script></body></html>

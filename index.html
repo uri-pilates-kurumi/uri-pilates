@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>uri pilates｜Exercise Library</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Noto+Serif+JP:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f6f1e4;--card:#fffdf6;--ink:#1d3328;--green:#1f4a38;--ong:#f6f1e4;--mut:#6b7a70;--line:#ddd6c1;--acc:#b8a56a;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#10211a;--card:#172c23;--ink:#efe9d8;--green:#2f6a52;--ong:#f6f1e4;--mut:#9fb0a5;--line:#2a4538;--acc:#c9b676;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#10211a;--card:#172c23;--ink:#efe9d8;--green:#2f6a52;--ong:#f6f1e4;--mut:#9fb0a5;--line:#2a4538;--acc:#c9b676;color-scheme:dark}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'Noto Serif JP','Hiragino Mincho ProN','Yu Mincho',serif;line-height:1.7;-webkit-text-size-adjust:100%}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--green);z-index:10}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:9;background:var(--green);color:var(--ong);padding:12px 16px;display:flex;align-items:center;justify-content:space-between}
+.logo{font-family:'Cormorant Garamond',serif;font-size:26px;letter-spacing:.06em;line-height:1.1}
+.logo small{display:block;font-size:11px;letter-spacing:.28em;color:var(--acc);text-transform:uppercase}
+.hb{display:flex;gap:8px}
+button,select,input,textarea{font:inherit;color:inherit}
+.ib{background:transparent;border:1px solid var(--acc);color:var(--ong);border-radius:20px;padding:6px 14px;font-size:14px;cursor:pointer}
+main{max-width:1100px;margin:0 auto;padding:14px 14px 40px}
+.search{width:100%;padding:11px 16px;border:1px solid var(--line);border-radius:24px;background:var(--card);font-size:16px}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:12px 0 4px}
+.chip{flex:none;border:1px solid var(--line);background:var(--card);border-radius:20px;padding:6px 14px;font-size:14px;cursor:pointer;white-space:nowrap}
+.chip.on{background:var(--green);color:var(--ong);border-color:var(--green)}
+.row{display:flex;gap:8px;margin:8px 0}
+.row select{flex:1;min-width:0;padding:8px;border:1px solid var(--line);border-radius:10px;background:var(--card);font-size:15px}
+.cnt{color:var(--mut);font-size:13px;margin:6px 2px 10px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden;cursor:pointer;position:relative}
+.ph{aspect-ratio:4/3;background:linear-gradient(135deg,var(--green),#4b7a62);display:flex;align-items:center;justify-content:center;color:var(--acc);font-family:'Cormorant Garamond',serif;font-size:34px}
+.ph img{width:100%;height:100%;object-fit:cover;display:block}
+.cb{padding:10px 12px 12px}
+.cb b{display:block;font-size:15px;line-height:1.4}
+.en{font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--mut);font-size:15px}
+.meta{font-size:12px;color:var(--mut);margin-top:4px}
+.heart{position:absolute;top:8px;right:8px;width:34px;height:34px;border-radius:50%;border:none;background:rgba(255,253,246,.9);color:#8a3a3a;font-size:18px;cursor:pointer}
+.badge{position:absolute;top:8px;left:8px;background:rgba(31,74,56,.88);color:#f6f1e4;font-size:11px;padding:2px 10px;border-radius:12px}
+.empty{text-align:center;color:var(--mut);padding:50px 10px}
+.ov{position:fixed;inset:0;background:rgba(10,25,18,.6);z-index:50;display:flex;justify-content:center;align-items:flex-end}
+.sheet{background:var(--bg);width:100%;max-width:720px;max-height:94%;overflow-y:auto;border-radius:20px 20px 0 0;padding:0 0 calc(24px + env(safe-area-inset-bottom,0px))}
+.sh{position:sticky;top:0;background:var(--bg);display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid var(--line);z-index:2}
+.sb{padding:14px 16px}
+.dph{width:100%;max-height:320px;object-fit:cover;border-radius:14px;display:block;margin-bottom:12px}
+h2{margin:0;font-size:20px;line-height:1.4}
+.sec{margin-top:14px}.sec h4{margin:0 0 2px;font-size:13px;color:var(--acc);letter-spacing:.08em}
+.sec p{margin:0;white-space:pre-wrap}
+.tag{display:inline-block;background:var(--green);color:var(--ong);border-radius:12px;padding:1px 10px;font-size:12px;margin:2px 4px 2px 0}
+.btn{border:1px solid var(--green);background:var(--green);color:var(--ong);border-radius:12px;padding:9px 18px;cursor:pointer;font-size:15px}
+.btn.o{background:transparent;color:var(--ink);border-color:var(--line)}.btn.d{background:transparent;color:#b04a4a;border-color:#b04a4a}
+.acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:20px}
+label{display:block;font-size:13px;color:var(--mut);margin:12px 0 3px}
+.f{width:100%;padding:9px 12px;border:1px solid var(--line);border-radius:10px;background:var(--card);font-size:16px}
+textarea.f{min-height:76px;resize:vertical}
+.note{font-size:12px;color:var(--mut)}
+.cg{display:flex;flex-wrap:wrap;gap:8px}
+.toast{position:fixed;left:50%;bottom:calc(30px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--green);color:var(--ong);padding:10px 18px;border-radius:20px;z-index:99;font-size:14px;max-width:90%}
+</style></head>
+<body>
+<header><div class="logo">uri pilates<small>Exercise Library</small></div>
+<div class="hb"><button class="ib" onclick="openData()">データ</button><button class="ib" onclick="openForm()">＋ 新規</button></div></header>
+<main>
+<input class="search" id="q" type="search" placeholder="キーワード検索（名前・目的・部位・キューなど）" oninput="S.q=this.value;drawGrid()">
+<div class="chips" id="eqs"></div>
+<div class="row"><select id="mu" onchange="S.mu=this.value;drawGrid()"></select><select id="pu" onchange="S.pu=this.value;drawGrid()"></select><button class="chip" id="fv" onclick="S.fav=!S.fav;drawFilters();drawGrid()">♡</button></div>
+<div style="text-align:right"><button class="chip" onclick="openMaster()">部位・目的の項目を編集</button></div><div class="cnt" id="cnt"></div><div class="grid" id="grid"></div>
+</main><div id="modal"></div>
+<script>
+const EQ=['リフォーマー','キャデラック','チェア','マット','プロップス'],LV=['初級','中級','上級'],KEY='uriPilatesV1';
+const FD=[['startPos','開始姿勢','t'],['spring','スプリング設定','t'],['purpose','ワークの目的','t'],['targets','ターゲット部位','t'],['setup','セットアップ','a'],['steps','動作手順','a'],['cue','キューイング','a'],['comp','代償動作','a'],['mod','修正方法','a'],['suit','適応する姿勢・お悩み','a'],['caution','注意事項・禁忌','a'],['vari','バリエーション','a'],['memo','自由記入メモ','a']];
+const SAMPLE=[
+{id:'s1',nameJa:'ハンドレッド',nameEn:'The Hundred',eq:'マット',level:'中級',startPos:'仰向け・テーブルトップまたは脚を伸ばす',spring:'',purpose:'呼吸,体幹の安定,ウォームアップ',targets:'腹筋群,体幹',setup:'背骨をニュートラルに保ち、頭と肩甲骨の下部を持ち上げる',steps:'1. 頭と胸を持ち上げる\n2. 腕を小さく上下に振る\n3. 吸う5カウント・吐く5カウントを10セット',cue:'肋骨を締めて、首の後ろを長く',comp:'腰が反る／首が縮む／肩がすくむ',mod:'膝を曲げる、頭を下ろす',suit:'体幹の安定性を高めたい方',caution:'頸部や腰部に不快感がある場合は強度を下げる',vari:'脚を伸ばす／脚の高さを変える',memo:'サンプルです。自由に編集・削除できます。',fav:false},
+{id:'s2',nameJa:'フットワーク',nameEn:'Footwork',eq:'リフォーマー',level:'初級',startPos:'仰向け・ヘッドレスト下げ・足をフットバーに',spring:'赤1＋青1（目安）',purpose:'下肢の連動,骨盤の安定',targets:'大腿四頭筋,臀筋,ふくらはぎ',setup:'肩をショルダーレストに当て、骨盤をニュートラルに',steps:'1. パラレルで踵・つま先・Vポジション\n2. 膝を伸ばしてキャリッジを押し出す\n3. 戻すときも重さに任せない',cue:'坐骨で押す／足裏全体で',comp:'骨盤の傾き、膝の過伸展',mod:'スプリングを重くする',suit:'下肢のアライメントを整えたい方',caution:'膝の痛みがある場合は可動域を調整',vari:'片脚、ヒールレイズ',memo:'サンプル。スプリング設定は目安です。',fav:false},
+{id:'s3',nameJa:'ショルダーブリッジ',nameEn:'Shoulder Bridge',eq:'マット',level:'中級',startPos:'仰向け・膝を立てる',spring:'',purpose:'背骨の分節運動,股関節の伸展',targets:'臀筋,ハムストリングス,脊柱',setup:'足を腰幅に、腕は体の横',steps:'1. 尾骨から順に持ち上げる\n2. 骨盤を水平に保つ\n3. 上から順に下ろす',cue:'膝を遠くへ／肋骨を締める',comp:'腰の反り、膝の開き',mod:'小さな可動域で',suit:'お尻を使いにくい方',caution:'頸部に違和感があれば中止',vari:'片脚を伸ばす',memo:'サンプルです。',fav:false}];
+let W=[],S={q:'',eq:'',mu:'',pu:'',fav:false},P='',mem=null,M={targets:[],purpose:[]};
+const MK='uriPilatesMasterV1',MD={targets:['腹筋群','体幹','臀筋','ハムストリングス','大腿四頭筋','ふくらはぎ','内転筋','背筋群','脊柱','肩甲骨周り','股関節'],purpose:['呼吸','ウォームアップ','体幹の安定','骨盤の安定','下肢の連動','背骨の分節運動','股関節の伸展','姿勢改善','柔軟性','筋力強化']};
+const e=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const tags=s=>String(s||'').split(/[,、，]/).map(x=>x.trim()).filter(Boolean);
+const $=id=>document.getElementById(id);
+function load(){let r=null;try{r=localStorage.getItem(KEY)}catch(x){r=mem}
+ if(r==null){W=JSON.parse(JSON.stringify(SAMPLE));return}
+ try{W=JSON.parse(r)||[]}catch(x){W=[]}}
+function persist(){const s=JSON.stringify(W);mem=s;try{localStorage.setItem(KEY,s);return true}catch(x){alert('保存できませんでした。写真が多すぎる可能性があります。バックアップを取り、不要な写真を減らしてください。');return false}}
+function toast(t){const d=document.createElement('div');d.className='toast';d.textContent=t;document.body.appendChild(d);setTimeout(()=>d.remove(),2600)}
+window.alert=toast;
+function saveM(){try{localStorage.setItem(MK,JSON.stringify(M))}catch(x){}}
+function syncM(){['targets','purpose'].forEach(k=>W.forEach(w=>tags(w[k]).forEach(t=>{if(!M[k].includes(t))M[k].push(t)})));saveM()}
+function loadM(){let r=null;try{r=JSON.parse(localStorage.getItem(MK))}catch(x){}
+ M=r&&r.targets&&r.purpose?r:JSON.parse(JSON.stringify(MD));syncM()}
+function chipsHtml(k,sel){return M[k].map(v=>`<span class="chip ${sel.includes(v)?'on':''}" data-v="${e(v)}" onclick="this.classList.toggle('on')">${e(v)}</span>`).join('')||'<span class="note">項目がありません。下で追加してください</span>'}
+function picked(k){return [...document.querySelectorAll('#g_'+k+' .chip.on')].map(x=>x.dataset.v)}
+function qadd(k){const v=$('n_'+k).value.trim();if(!v)return;const s=picked(k);if(!M[k].includes(v))M[k].push(v);if(!s.includes(v))s.push(v);saveM();$('g_'+k).innerHTML=chipsHtml(k,s);$('n_'+k).value='';drawFilters()}
+function mrefresh(k,o){const fk=k==='targets'?'mu':'pu';if(o&&S[fk]===o)S[fk]='';persist();saveM();drawFilters();drawGrid()}
+function openMaster(ek,ei){let h='';[['targets','ターゲット部位'],['purpose','ワークの目的']].forEach(([k,l])=>{h+=`<div class="sec"><h4>${l}</h4>`+M[k].map((v,i)=>`<div style="display:flex;gap:6px;align-items:center;margin:6px 0">`+(ek===k&&ei===i?`<input class="f" id="rn" value="${e(v)}" style="flex:1"><button class="btn" onclick="mren('${k}',${i})">保存</button>`:`<span style="flex:1">${e(v)}</span><button class="btn o" onclick="openMaster('${k}',${i})">名前変更</button><button class="btn d" onclick="mdel('${k}',${i},this)">削除</button>`)+`</div>`).join('')+`<div style="display:flex;gap:6px;margin-top:8px"><input class="f" id="m_${k}" placeholder="新しい項目を追加"><button class="btn" onclick="madd('${k}')">追加</button></div></div>`});h+='<p class="note">名前を変えると、登録済みのワークにも反映されます。削除すると、登録済みのワークからも外れます。</p>';sheet('部位・目的の項目を編集',h)}
+function madd(k){const v=$('m_'+k).value.trim();if(!v||M[k].includes(v))return;M[k].push(v);saveM();drawFilters();openMaster()}
+function mren(k,i){const n=$('rn').value.trim(),o=M[k][i];if(!n||n===o){openMaster();return}if(M[k].includes(n)){alert('同じ名前の項目があります');return}M[k][i]=n;W.forEach(w=>{w[k]=tags(w[k]).map(t=>t===o?n:t).join(',')});mrefresh(k,o);openMaster()}
+function mdel(k,i,b){if(!b.dataset.c){b.dataset.c=1;b.textContent='もう一度押す';return}const o=M[k][i];M[k].splice(i,1);W.forEach(w=>{w[k]=tags(w[k]).filter(t=>t!==o).join(',')});mrefresh(k,o);openMaster()}
+function uniq(k){return [...new Set(W.flatMap(w=>tags(w[k])))].sort()}
+function drawFilters(){
+ $('eqs').innerHTML=['すべて',...EQ].map(x=>`<button class="chip ${(x==='すべて'&&!S.eq)||S.eq===x?'on':''}" onclick="S.eq='${x==='すべて'?'':x}';drawFilters();drawGrid()">${x}</button>`).join('');
+ const o=(a,l,v)=>`<option value="">${l}：すべて</option>`+a.map(x=>`<option ${x===v?'selected':''}>${e(x)}</option>`).join('');
+ $('mu').innerHTML=o(M.targets,'ターゲット部位',S.mu);$('pu').innerHTML=o(M.purpose,'目的',S.pu);
+ $('fv').className='chip'+(S.fav?' on':'');$('fv').textContent=S.fav?'♥':'♡'}
+function drawGrid(){
+ const q=S.q.trim().toLowerCase();
+ const L=W.filter(w=>(!S.eq||w.eq===S.eq)&&(!S.mu||tags(w.targets).includes(S.mu))&&(!S.pu||tags(w.purpose).includes(S.pu))&&(!S.fav||w.fav)&&(!q||Object.entries(w).filter(([k])=>k!=='photo').map(([,v])=>v).join(' ').toLowerCase().includes(q)));
+ $('cnt').textContent=L.length+' 件 / 全 '+W.length+' 件';
+ $('grid').innerHTML=L.length?L.map(w=>`<div class="card" onclick="openDetail('${w.id}')"><div class="ph">${w.photo?`<img src="${w.photo}" alt="">`:e((w.nameJa||'').charAt(0))}</div><span class="badge">${e(w.eq)}</span><button class="heart" onclick="event.stopPropagation();fav('${w.id}')">${w.fav?'♥':'♡'}</button><div class="cb"><b>${e(w.nameJa)}</b><div class="meta">${e(w.level)}</div></div></div>`).join(''):'<div class="empty" style="grid-column:1/-1">該当するワークがありません</div>'}
+function fav(id){const w=W.find(x=>x.id===id);w.fav=!w.fav;persist();drawGrid()}
+function close_(){$('modal').innerHTML=''}
+function sheet(t,b){$('modal').innerHTML=`<div class="ov" onclick="if(event.target===this)close_()"><div class="sheet"><div class="sh"><b>${t}</b><button class="btn o" onclick="close_()">閉じる</button></div><div class="sb">${b}</div></div></div>`}
+function openDetail(id){const w=W.find(x=>x.id===id);
+ let h=(w.photo?`<img class="dph" src="${w.photo}" alt="">`:'')+`<h2>${e(w.nameJa)}</h2><div style="margin-top:6px"><span class="tag">${e(w.eq)}</span><span class="tag">${e(w.level)}</span></div>`;
+ FD.forEach(([k,l])=>{if(!w[k])return;const v=(k==='purpose'||k==='targets')?tags(w[k]).map(x=>`<span class="tag">${e(x)}</span>`).join(''):`<p>${e(w[k])}</p>`;h+=`<div class="sec"><h4>${l.replace(/（.*）/,'')}</h4>${v}</div>`});
+ h+=`<div class="acts"><button class="btn" onclick="openForm('${id}')">編集</button><button class="btn o" onclick="fav('${id}');openDetail('${id}')">${w.fav?'♥ お気に入り解除':'♡ お気に入り'}</button><button class="btn d" onclick="del('${id}',this)">削除</button></div>`;
+ sheet('ワーク詳細',h)}
+function del(id,b){if(!b.dataset.c){b.dataset.c=1;b.textContent='もう一度押すと削除';return}W=W.filter(x=>x.id!==id);persist();close_();drawFilters();drawGrid()}
+function openForm(id){const w=id?W.find(x=>x.id===id):{};P=w.photo||'';
+ const sel=(a,v)=>a.map(x=>`<option ${x===v?'selected':''}>${x}</option>`).join('');
+ let h=`<label>写真</label><img id="pv" class="dph" style="display:${P?'block':'none'}" src="${P}" alt=""><input type="file" accept="image/*" onchange="pick(this)"><div class="note">自動で縮小して保存します</div>
+<label>ワーク名</label><input class="f" id="f_nameJa" value="${e(w.nameJa)}">
+<label>使用器具</label><select class="f" id="f_eq">${sel(EQ,w.eq)}</select><label>難易度</label><select class="f" id="f_level">${sel(LV,w.level)}</select>`;
+ FD.forEach(([k,l,t])=>{if(k==='purpose'||k==='targets'){h+=`<label>${l}（複数選択可）</label><div class="cg" id="g_${k}">${chipsHtml(k,tags(w[k]))}</div><div style="display:flex;gap:6px;margin-top:8px"><input class="f" id="n_${k}" placeholder="新しい項目を追加"><button class="btn o" onclick="qadd('${k}')">追加</button></div>`;return}h+=`<label>${l}</label>`+(t==='a'?`<textarea class="f" id="f_${k}">${e(w[k])}</textarea>`:`<input class="f" id="f_${k}" value="${e(w[k])}">`)});
+ h+=`<div class="acts"><button class="btn" onclick="save('${id||''}')">保存</button><button class="btn o" onclick="close_()">キャンセル</button></div>`;
+ sheet(id?'ワークを編集':'ワークを登録',h)}
+function pick(inp){const f=inp.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{const k=Math.min(1,720/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=im.width*k;c.height=im.height*k;c.getContext('2d').drawImage(im,0,0,c.width,c.height);P=c.toDataURL('image/jpeg',.72);const p=$('pv');p.src=P;p.style.display='block'};im.src=r.result};r.readAsDataURL(f)}
+function save(id){const g=k=>$('f_'+k).value.trim();
+ if(!g('nameJa')){alert('ワーク名を入力してください');return}
+ const w=id?W.find(x=>x.id===id):{id:'w'+Date.now(),fav:false};
+ ['nameJa','eq','level',...FD.map(f=>f[0]).filter(k=>k!=='purpose'&&k!=='targets')].forEach(k=>w[k]=g(k));w.purpose=picked('purpose').join(',');w.targets=picked('targets').join(',');w.photo=P;
+ if(!id)W.unshift(w);if(persist()){close_();drawFilters();drawGrid()}}
+function openData(){sheet('バックアップと復元',`<div class="sec" style="margin-top:0"><h4>バックアップ</h4><p class="note">下のテキストをコピーして「メモ」アプリ等に保存してください。</p><label style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="inc" onchange="mkBk()"> 写真を含める（サイズが大きくなります）</label><textarea class="f" id="bk" rows="5" readonly></textarea><div class="acts"><button class="btn" onclick="cp()">コピー</button></div></div>
+<div class="sec"><h4>復元</h4><p class="note">バックアップのテキストを貼り付けるか、ファイルを選んでください。同じIDのワークは上書きされます。</p><input type="file" accept=".json,.txt,application/json,text/plain" onchange="rf(this)"><textarea class="f" id="rs" rows="4" placeholder="ここに貼り付け"></textarea><div class="acts"><button class="btn" onclick="restore()">復元する</button></div></div>`);mkBk()}
+function mkBk(){const inc=$('inc').checked;$('bk').value=JSON.stringify({app:'uri-pilates',v:2,master:M,works:W.map(w=>inc?w:{...w,photo:''})})}
+function cp(){const t=$('bk');t.select();try{navigator.clipboard.writeText(t.value).then(()=>alert('コピーしました'),()=>{document.execCommand('copy');alert('コピーしました')})}catch(x){try{document.execCommand('copy');alert('コピーしました')}catch(y){alert('テキストを長押しでコピーしてください')}}}
+function rf(i){const f=i.files[0];if(!f)return;const r=new FileReader();r.onload=()=>$('rs').value=r.result;r.readAsText(f)}
+function restore(){try{const d=JSON.parse($('rs').value);if(!d.works)throw 0;d.works.forEach(n=>{const i=W.findIndex(x=>x.id===n.id);if(i>=0){if(!n.photo)n.photo=W[i].photo;W[i]=n}else W.push(n)});if(d.master)['targets','purpose'].forEach(k=>(d.master[k]||[]).forEach(t=>{if(!M[k].includes(t))M[k].push(t)}));syncM();persist();close_();drawFilters();drawGrid();alert(d.works.length+' 件を復元しました')}catch(x){alert('バックアップの形式が正しくありません')}}
+load();loadM();drawFilters();drawGrid();
+</script></body></html>
